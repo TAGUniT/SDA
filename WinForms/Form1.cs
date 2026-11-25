@@ -10,10 +10,14 @@ namespace WinForms
         double width;
         double length;
         int editIndex = -1;
+        int autoLabel;
 
         public Form1()
         {
             InitializeComponent();
+
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dataGridView1.RowHeadersVisible = false;
 
             tb_Label = textBox1;
             tb_Width = textBox2;
@@ -26,18 +30,35 @@ namespace WinForms
             tb_Length.TextChanged += TextBox_TextChanged;
 
             AcceptButton = button1;
+
+            var splitter = new Splitter { Dock = DockStyle.Right, Width = 5, MinSize = 250 };
+            tabPage1.Controls.Add(splitter);
+            tabPage1.Controls.SetChildIndex(splitter, 0);
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            label = tb_Label.Text;
+            label = tb_Label.Text.Trim();
 
-            if (label == string.Empty
-                || !double.TryParse(tb_Width.Text, out width)
+            if (!double.TryParse(tb_Width.Text, out width)
                 || !double.TryParse(tb_Length.Text, out length)
                 || width <= 0 || length <= 0)
             {
-                MessageBox.Show("Please enter valid values for label, width, and length.");
+                MessageBox.Show("Please enter valid values for width and length.");
+                return;
+            }
+
+            if (label == string.Empty)
+            {
+                do
+                {
+                    label = "#" + ++autoLabel;
+                }
+                while (LabelExists(label));
+            }
+            else if (LabelExists(label))
+            {
+                MessageBox.Show($"Label \"{label}\" is already in use.");
                 return;
             }
 
@@ -55,7 +76,7 @@ namespace WinForms
             }
             else
             {
-                dataGridView1.Rows.Add(
+                int rowIndex = dataGridView1.Rows.Add(
                     null!,
                     label,
                     width,
@@ -69,6 +90,10 @@ namespace WinForms
                 tb_Length.Clear();
 
                 tabControl2.SelectedTab = tabPage4;
+
+                dataGridView1.CurrentCell = dataGridView1.Rows[rowIndex].Cells[0];
+                dataGridView1.Rows[rowIndex].Selected = true;
+                dataGridView1.FirstDisplayedScrollingRowIndex = rowIndex;
                 tb_Label.Focus();
             }
         }
@@ -91,6 +116,9 @@ namespace WinForms
             }
             else if (e.ColumnIndex == Column6.Index)
             {
+                bool newestPlaceholder =
+                    dataGridView1.Rows[e.RowIndex].Cells[1].Value?.ToString() == "#" + autoLabel;
+
                 if (e.RowIndex == editIndex)
                 {
                     editIndex = -1;
@@ -105,6 +133,12 @@ namespace WinForms
                 }
 
                 dataGridView1.Rows.RemoveAt(e.RowIndex);
+
+                if (newestPlaceholder)
+                    autoLabel--;
+
+                if (dataGridView1.Rows.Count == 0)
+                    autoLabel = 0;
             }
         }
 
@@ -115,6 +149,17 @@ namespace WinForms
 
             tabControl2.SelectedTab = tabPage3;
             tb.Focus();
+        }
+
+        private bool LabelExists(string value)
+        {
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Index != editIndex && row.Cells[1].Value?.ToString() == value)
+                    return true;
+            }
+
+            return false;
         }
     }
 }

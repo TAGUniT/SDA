@@ -134,7 +134,7 @@
             // 
             // Column0
             // 
-            Column0.HeaderText = "Vis.";
+            Column0.HeaderText = "";
             Column0.MinimumWidth = 6;
             Column0.Name = "Column0";
             Column0.ReadOnly = true;
@@ -190,6 +190,7 @@
             // 
             // button1
             // 
+            button1.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             button1.Location = new Point(8, 380);
             button1.Name = "button1";
             button1.Size = new Size(94, 29);
