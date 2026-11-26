@@ -135,7 +135,7 @@
             // Column0
             // 
             Column0.HeaderText = "";
-            Column0.MinimumWidth = 6;
+            Column0.MinimumWidth = 30;
             Column0.Name = "Column0";
             Column0.ReadOnly = true;
             Column0.Width = 125;
@@ -143,7 +143,7 @@
             // Column1
             // 
             Column1.HeaderText = "Label";
-            Column1.MinimumWidth = 6;
+            Column1.MinimumWidth = 70;
             Column1.Name = "Column1";
             Column1.ReadOnly = true;
             Column1.Width = 125;
@@ -151,7 +151,7 @@
             // Column2
             // 
             Column2.HeaderText = "Width";
-            Column2.MinimumWidth = 6;
+            Column2.MinimumWidth = 60;
             Column2.Name = "Column2";
             Column2.ReadOnly = true;
             Column2.Width = 125;
@@ -159,7 +159,7 @@
             // Column3
             // 
             Column3.HeaderText = "Length";
-            Column3.MinimumWidth = 6;
+            Column3.MinimumWidth = 65;
             Column3.Name = "Column3";
             Column3.ReadOnly = true;
             Column3.Width = 125;
@@ -167,7 +167,7 @@
             // Column4
             // 
             Column4.HeaderText = "Area";
-            Column4.MinimumWidth = 6;
+            Column4.MinimumWidth = 60;
             Column4.Name = "Column4";
             Column4.ReadOnly = true;
             Column4.Width = 125;
@@ -175,7 +175,7 @@
             // Column5
             // 
             Column5.HeaderText = "";
-            Column5.MinimumWidth = 6;
+            Column5.MinimumWidth = 70;
             Column5.Name = "Column5";
             Column5.ReadOnly = true;
             Column5.Width = 125;
@@ -183,7 +183,7 @@
             // Column6
             // 
             Column6.HeaderText = "";
-            Column6.MinimumWidth = 6;
+            Column6.MinimumWidth = 70;
             Column6.Name = "Column6";
             Column6.ReadOnly = true;
             Column6.Width = 125;

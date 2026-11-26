@@ -2,13 +2,12 @@ namespace WinForms
 {
     public partial class Form1 : Form
     {
+        const int GridBorder = 3;
+
         TextBox tb_Label;
         TextBox tb_Width;
         TextBox tb_Length;
 
-        string label = string.Empty;
-        double width;
-        double length;
         int editIndex = -1;
         int autoLabel;
 
@@ -18,6 +17,8 @@ namespace WinForms
 
             dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             dataGridView1.RowHeadersVisible = false;
+            dataGridView1.Resize += (_, _) => UpdateScrollBars();
+            UpdateScrollBars();
 
             tb_Label = textBox1;
             tb_Width = textBox2;
@@ -31,22 +32,34 @@ namespace WinForms
 
             AcceptButton = button1;
 
-            var splitter = new Splitter { Dock = DockStyle.Right, Width = 5, MinSize = 250 };
+            int tabFrameWidth = tabControl2.Width - dataGridView1.ClientSize.Width;
+            int minPaneWidth = tabFrameWidth + ColumnsMinimumWidth + GridBorder
+                + SystemInformation.VerticalScrollBarWidth;
+
+            var splitter = new Splitter { Dock = DockStyle.Right, Width = 5, MinSize = minPaneWidth, MinExtra = 200 };
             tabPage1.Controls.Add(splitter);
             tabPage1.Controls.SetChildIndex(splitter, 0);
         }
 
+        private int ColumnsMinimumWidth =>
+            dataGridView1.Columns.Cast<DataGridViewColumn>().Sum(c => c.MinimumWidth);
+
         private void button1_Click(object sender, EventArgs e)
         {
-            label = tb_Label.Text.Trim();
-
-            if (!double.TryParse(tb_Width.Text, out width)
-                || !double.TryParse(tb_Length.Text, out length)
+            if (!double.TryParse(tb_Width.Text, out double width)
+                || !double.TryParse(tb_Length.Text, out double length)
+                || !double.IsFinite(width)
+                || !double.IsFinite(length)
                 || width <= 0 || length <= 0)
             {
                 MessageBox.Show("Please enter valid values for width and length.");
                 return;
             }
+
+            string label = tb_Label.Text.Trim();
+
+            if (editIndex >= 0 && label == string.Empty)
+                label = dataGridView1.Rows[editIndex].Cells[1].Value!.ToString()!;
 
             if (label == string.Empty)
             {
@@ -72,7 +85,7 @@ namespace WinForms
 
                 editIndex = -1;
                 button1.Text = "Add";
-                tabControl2.SelectedTab = tabPage4;
+                ResetEntry();
             }
             else
             {
@@ -85,17 +98,21 @@ namespace WinForms
                     "Edit",
                     "Delete");
 
-                tb_Label.Clear();
-                tb_Width.Clear();
-                tb_Length.Clear();
-
-                tabControl2.SelectedTab = tabPage4;
+                ResetEntry();
 
                 dataGridView1.CurrentCell = dataGridView1.Rows[rowIndex].Cells[0];
                 dataGridView1.Rows[rowIndex].Selected = true;
                 dataGridView1.FirstDisplayedScrollingRowIndex = rowIndex;
-                tb_Label.Focus();
             }
+        }
+
+        private void ResetEntry()
+        {
+            tb_Label.Clear();
+            tb_Width.Clear();
+            tb_Length.Clear();
+            tabControl2.SelectedTab = tabPage4;
+            tb_Label.Focus();
         }
 
         private void dataGridView1_CellContentClick(object? sender, DataGridViewCellEventArgs e)
@@ -140,6 +157,13 @@ namespace WinForms
                 if (dataGridView1.Rows.Count == 0)
                     autoLabel = 0;
             }
+        }
+
+        private void UpdateScrollBars()
+        {
+            dataGridView1.ScrollBars = dataGridView1.ClientSize.Width >= ColumnsMinimumWidth + GridBorder
+                ? ScrollBars.Vertical
+                : ScrollBars.Both;
         }
 
         private void TextBox_TextChanged(object? sender, EventArgs e)
